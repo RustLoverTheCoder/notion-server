@@ -1,20 +1,16 @@
 pub mod graphql;
 pub mod token;
 
-use async_graphql::{
-    http::{playground_source, GraphQLPlaygroundConfig, ALL_WEBSOCKET_PROTOCOLS},
-    EmptyMutation, Schema,
-};
-use async_graphql_axum::{GraphQLProtocol, GraphQLRequest, GraphQLResponse, GraphQLWebSocket};
+use async_graphql::http::{playground_source, GraphQLPlaygroundConfig};
+use async_graphql_axum::{GraphQLRequest, GraphQLResponse};
 use axum::{
-    extract::{ws::WebSocketUpgrade, State},
+    extract::State,
     http::header::HeaderMap,
-    response::{Html, IntoResponse, Response},
+    response::{Html, IntoResponse},
     routing::get,
     Router, Server,
 };
-
-use token::{on_connection_init, QueryRoot, SubscriptionRoot, Token, TokenSchema};
+use graphql::schema::{build_schema, AppSchema};
 
 use config::init;
 
@@ -24,46 +20,25 @@ async fn graphql_playground() -> impl IntoResponse {
     ))
 }
 
-fn get_token_from_headers(headers: &HeaderMap) -> Option<Token> {
-    headers
-        .get("Token")
-        .and_then(|value| value.to_str().map(|s| Token(s.to_string())).ok())
-}
-
 async fn graphql_handler(
-    State(schema): State<TokenSchema>,
+    State(schema): State<AppSchema>,
     headers: HeaderMap,
     req: GraphQLRequest,
 ) -> GraphQLResponse {
     let mut req = req.into_inner();
-    if let Some(token) = get_token_from_headers(&headers) {
-        req = req.data(token);
-    }
+    // if let Some(token) = get_token_from_headers(&headers) {
+    //     req = req.data(token);
+    // }
     schema.execute(req).await.into()
-}
-
-async fn graphql_ws_handler(
-    State(schema): State<TokenSchema>,
-    protocol: GraphQLProtocol,
-    websocket: WebSocketUpgrade,
-) -> Response {
-    websocket
-        .protocols(ALL_WEBSOCKET_PROTOCOLS)
-        .on_upgrade(move |stream| {
-            GraphQLWebSocket::new(stream, schema.clone(), protocol)
-                .on_connection_init(on_connection_init)
-                .serve()
-        })
 }
 
 #[tokio::main]
 async fn start() -> anyhow::Result<()> {
     init().await?;
-    let schema = Schema::new(QueryRoot, EmptyMutation, SubscriptionRoot);
+    let schema = build_schema();
 
     let app = Router::new()
         .route("/", get(graphql_playground).post(graphql_handler))
-        .route("/ws", get(graphql_ws_handler))
         .with_state(schema);
 
     println!("Playground: http://localhost:8000");
