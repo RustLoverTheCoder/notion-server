@@ -1,3 +1,4 @@
+pub mod graphql;
 pub mod token;
 
 use async_graphql::{
@@ -15,10 +16,7 @@ use axum::{
 
 use token::{on_connection_init, QueryRoot, SubscriptionRoot, Token, TokenSchema};
 
-use config::{
-    contants::{JWT_SECRET, REDIS_SESSION_STORE},
-    init,
-};
+use config::init;
 
 async fn graphql_playground() -> impl IntoResponse {
     Html(playground_source(
@@ -59,7 +57,7 @@ async fn graphql_ws_handler(
 }
 
 #[tokio::main]
-async fn start() -> anyhow::Result<()>  {
+async fn start() -> anyhow::Result<()> {
     init().await?;
     let schema = Schema::new(QueryRoot, EmptyMutation, SubscriptionRoot);
 
@@ -75,7 +73,6 @@ async fn start() -> anyhow::Result<()>  {
         .await?;
     Ok(())
 }
-
 
 pub fn main() {
     let result = start();
