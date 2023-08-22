@@ -2,3 +2,4 @@
 
 pub use super::notes::Entity as Notes;
 pub use super::post::Entity as Post;
+pub use super::user::Entity as User;
