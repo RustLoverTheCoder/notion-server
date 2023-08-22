@@ -10,6 +10,14 @@ impl BlockQuery {
         todo!()
     }
 
+    async fn get_block_by_parent_id(
+        &self,
+        ctx: &Context<'_>,
+        parent_id: String,
+    ) -> Result<Vec<block::Model>> {
+        todo!()
+    }
+
     async fn get_block_by_user_id(
         &self,
         ctx: &Context<'_>,
