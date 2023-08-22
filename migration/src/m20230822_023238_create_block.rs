@@ -12,7 +12,7 @@ impl MigrationTrait for Migration {
                 Table::create()
                     .table(Block::Table)
                     .if_not_exists()
-                    .col(ColumnDef::new(Block::Id).uuid().not_null())
+                    .col(ColumnDef::new(Block::Id).uuid().not_null().primary_key())
                     .col(ColumnDef::new(Block::ParentId).uuid())
                     .col(ColumnDef::new(Block::Title).json())
                     .col(ColumnDef::new(Block::Body).json())
