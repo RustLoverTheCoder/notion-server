@@ -2,6 +2,6 @@
 
 pub mod prelude;
 
-pub mod notes;
-pub mod post;
+pub mod block;
 pub mod user;
+pub mod user_setting;
