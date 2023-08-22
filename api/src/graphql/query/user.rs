@@ -8,7 +8,15 @@ pub struct UserQuery;
 
 #[Object]
 impl UserQuery {
-    async fn find_user_by_id(&self, ctx: &Context<'_>, id: i32) -> Result<user::Model> {
+    async fn get_user_by_id(&self, ctx: &Context<'_>, id: String) -> Result<user::Model> {
+        todo!()
+    }
+
+    async fn get_user_by_email(&self, ctx: &Context<'_>, email: String) -> Result<Vec<user::Model>> {
+        todo!()
+    }
+
+    async fn get_user_by_phone_number(&self, ctx: &Context<'_>, phone_number: String) -> Result<Vec<user::Model>> {
         todo!()
     }
 }

@@ -6,9 +6,20 @@ use entity::{async_graphql,user};
 pub struct UserMutation;
 
 
+#[derive(InputObject, Clone, Debug)]
+pub struct NewProfileInput { 
+    pub user_id: ID, 
+    pub username: String,
+}
+
+
 #[Object]
 impl UserMutation {
-    async fn create_user(&self, ctx: &Context<'_>, id: i32) -> Result<user::Model> {
+    async fn create_user(&self, ctx: &Context<'_>, new_profile: NewProfileInput) -> Result<user::Model> {
+        todo!()
+    }
+
+    async fn update_user(&self, ctx: &Context<'_>, new_profile: NewProfileInput) -> Result<user::Model> {
         todo!()
     }
 }
