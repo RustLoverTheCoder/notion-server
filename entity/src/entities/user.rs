@@ -30,3 +30,17 @@ pub struct Model {
 pub enum Relation {}
 
 impl ActiveModelBehavior for ActiveModel {}
+
+impl Entity {
+    pub fn find_by_id(id: i32) -> Select<Entity> {
+        Self::find().filter(Column::Id.eq(id))
+    }
+
+    pub fn find_by_email(email: &str) -> Select<Entity> {
+        Self::find().filter(Column::Email.eq(email))
+    }
+
+    pub fn find_by_phone_number(phone_number: &str) -> Select<Entity> {
+        Self::find().filter(Column::PhoneNumber.eq(phone_number))
+    }
+}
