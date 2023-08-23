@@ -1,5 +1,7 @@
 pub mod graphql;
 pub mod token;
+pub mod error;
+
 
 use async_graphql::http::{playground_source, GraphQLPlaygroundConfig};
 use async_graphql_axum::{GraphQLRequest, GraphQLResponse};

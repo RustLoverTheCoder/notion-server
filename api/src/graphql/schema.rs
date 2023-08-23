@@ -1,10 +1,13 @@
 use async_graphql::{EmptySubscription, Schema};
 
-use crate::graphql::{query::Query, mutation::Mutation};
+use crate::graphql::{mutation::Mutation, query::Query};
+use config::contants::DB;
 
 pub type AppSchema = Schema<Query, Mutation, EmptySubscription>;
 
 pub fn build_schema() -> AppSchema {
-    let schema = Schema::new(Query::default(), Mutation::default(), EmptySubscription);
-    schema
+    let db = DB.get().unwrap();
+    Schema::build(Query::default(), Mutation::default(), EmptySubscription)
+        .data(db)
+        .finish()
 }
