@@ -42,11 +42,11 @@ pub struct UserToken {
 
 #[Object]
 impl UserMutation {
-    async fn create_user(&self, ctx: &Context<'_>, new_profile: NewProfileInput) -> Result<user::Model> {
+    async fn update_user(&self, ctx: &Context<'_>, new_profile: NewProfileInput) -> Result<user::Model> {
         todo!()
     }
 
-    async fn update_user(&self, ctx: &Context<'_>, new_profile: NewProfileInput) -> Result<user::Model> {
+    async fn sign_up_by_email(&self, ctx: &Context<'_>, new_profile: NewProfileInput) -> Result<UserToken> {
         todo!()
     }
 
