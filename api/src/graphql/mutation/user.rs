@@ -1,4 +1,5 @@
 use async_graphql::{Context, Error, FieldResult, InputObject, Object, Result, SimpleObject, ID};
+use config::contants::DB;
 use entity::{user, user::Entity as User};
 use sea_orm::{DbConn, DbErr};
 
@@ -52,7 +53,8 @@ impl UserMutation {
         params: UserLoginEmail,
     ) -> Result<Option<user::Model>, Error> {
         tracing::debug!("sign_up_by_email: {:?}", params);
-        let db = ctx.data::<DbConn>().unwrap();
+        // let db = ctx.data::<DbConn>().unwrap();
+        let db = DB.get().unwrap();
         let data = User::find_by_email(&params.email.to_string())
             .one(db)
             .await?;
