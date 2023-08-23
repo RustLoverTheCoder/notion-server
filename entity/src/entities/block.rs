@@ -24,3 +24,20 @@ pub struct Model {
 pub enum Relation {}
 
 impl ActiveModelBehavior for ActiveModel {}
+
+impl Entity {
+    pub fn find_by_id(id: Uuid) -> Select<Entity> {
+        Self::find().filter(Column::Id.eq(id))
+    }
+
+    pub fn find_by_parent_id(parent_id: Uuid) -> Select<Entity> {
+        Self::find().filter(Column::ParentId.eq(parent_id))
+    }
+
+    // 通过 author_id 和 parent_id 查找
+    pub fn find_by_author_id_and_parent_id(author_id: Uuid, parent_id: Uuid) -> Select<Entity> {
+        Self::find()
+            .filter(Column::AuthorId.eq(author_id))
+            .filter(Column::ParentId.eq(parent_id))
+    }
+}
