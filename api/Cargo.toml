@@ -18,3 +18,4 @@ anyhow = "1.0.75"
 migration = { path = "../migration" }
 entity = { path = "../entity" }
 config = { path = "../config" }
+service = { path = "../service" }
