@@ -32,7 +32,14 @@ async fn graphql_handler(
 ) -> GraphQLResponse {
     let mut req = req.into_inner();
     if let Some(token) = get_token_from_headers(&headers) {
-        let claims = decode(&token.0);
+      let token_str = &token.0;
+      let mut substring = String::new();
+
+        for c in token_str.chars().skip(7) {
+          substring.push(c);
+        }
+        tracing::debug!("substring: {:?}", substring);
+        let claims = decode(&substring);
         tracing::debug!("claims: {:?}", claims);
         req = req.data(token);
     }
