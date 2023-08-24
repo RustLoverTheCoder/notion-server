@@ -16,45 +16,43 @@ pub struct Claims {
     pub(crate) sub: String, // 可选 用户
 }
 
-impl Claims {
-    pub fn decode(token: &str) -> anyhow::Result<TokenData<Claims>> {
-        tracing::debug!("token: {:?}", token);
-        let secret = JWT_SECRET.get().unwrap();
-        let decodeKey = &DecodingKey::from_secret(secret.as_bytes());
-        let jwt = jsonwebtoken::decode(
-            token,
-            decodeKey,
-            &Validation::default(),
-        )?;
+pub fn decode(token: &str) -> anyhow::Result<TokenData<Claims>> {
+    tracing::debug!("token: {:?}", token);
+    let secret = JWT_SECRET.get().unwrap();
+    let decodeKey = &DecodingKey::from_secret(secret.as_bytes());
+    let jwt = jsonwebtoken::decode(
+        token,
+        decodeKey,
+        &Validation::default(),
+    )?;
 
-        Ok(jwt)
-    }
+    Ok(jwt)
+}
 
-    pub fn encode(&self, user_id: String) -> anyhow::Result<(String, String, Duration)> {
-        let secret = JWT_SECRET.get().unwrap();
-        let secret = &EncodingKey::from_secret(secret.as_bytes());
-        let iss = "server".to_string();
-        let expires = Duration::days(30);
-        let sub = user_id.to_string();
-        let header = Header::default();
-        let now = Utc::now();
-        let exp = now + expires;
-        let claims = Claims {
-            exp: exp.timestamp(),
-            iat: now.timestamp(),
-            nbf: now.timestamp(),
-            iss,
-            sub,
-        };
-        let access_token = jsonwebtoken::encode(&header, &claims, secret)?;
+pub fn encode(user_id: String) -> anyhow::Result<(String, String, Duration)> {
+    let secret = JWT_SECRET.get().unwrap();
+    let secret = &EncodingKey::from_secret(secret.as_bytes());
+    let iss = "server".to_string();
+    let expires = Duration::days(30);
+    let sub = user_id.to_string();
+    let header = Header::default();
+    let now = Utc::now();
+    let exp = now + expires;
+    let claims = Claims {
+        exp: exp.timestamp(),
+        iat: now.timestamp(),
+        nbf: now.timestamp(),
+        iss,
+        sub,
+    };
+    let access_token = jsonwebtoken::encode(&header, &claims, secret)?;
 
-        let expires = Duration::days(90);
-        let exp = now + expires;
-        let claims = Claims {
-            exp: exp.timestamp(),
-            ..claims
-        };
-        let refresh_token = jsonwebtoken::encode(&header, &claims, secret)?;
-        Ok((access_token, refresh_token, expires))
-    }
+    let expires = Duration::days(90);
+    let exp = now + expires;
+    let claims = Claims {
+        exp: exp.timestamp(),
+        ..claims
+    };
+    let refresh_token = jsonwebtoken::encode(&header, &claims, secret)?;
+    Ok((access_token, refresh_token, expires))
 }

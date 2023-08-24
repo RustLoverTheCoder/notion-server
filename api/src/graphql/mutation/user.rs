@@ -1,6 +1,7 @@
 use async_graphql::{Context, Error, InputObject, Object, Result, SimpleObject, ID};
 use config::contants::DB;
 use entity::{user, user::Entity as User};
+use crate::jwt::encode;
 
 #[derive(Default)]
 pub struct UserMutation;
@@ -59,8 +60,17 @@ impl UserMutation {
         Ok(data)
     }
 
-    async fn login_by_phone(&self, ctx: &Context<'_>, user: UserLoginPhone) -> Result<UserToken> {
-        todo!()
+    async fn login_by_phone(&self, ctx: &Context<'_>, params: UserLoginPhone) -> Result<UserToken> {
+      let user_id = "123".to_string();
+        let (access_token, refresh_token, expires) =
+                   encode(user_id).unwrap();
+
+               let users_token = UserToken {
+                   access_token,
+                   refresh_token,
+                   expires: expires.num_seconds(),
+               };
+               Ok(users_token)
     }
 
     async fn send_code_to_phone(&self, ctx: &Context<'_>, phone_number: String) -> Result<bool> {

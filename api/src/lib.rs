@@ -16,7 +16,7 @@ use axum::{
 use graphql::schema::{build_schema, AppSchema};
 
 use config::init;
-use jwt::Claims;
+use jwt::decode;
 use util::get_token_from_headers;
 
 async fn graphql_playground() -> impl IntoResponse {
@@ -32,7 +32,7 @@ async fn graphql_handler(
 ) -> GraphQLResponse {
     let mut req = req.into_inner();
     if let Some(token) = get_token_from_headers(&headers) {
-        let claims = Claims::decode(&token.0);
+        let claims = decode(&token.0);
         tracing::debug!("claims: {:?}", claims);
         req = req.data(token);
     }
