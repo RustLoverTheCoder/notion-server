@@ -17,7 +17,6 @@ pub struct Claims {
 }
 
 pub fn decode(token: &str) -> anyhow::Result<TokenData<Claims>> {
-    tracing::debug!("token: {:?}", token);
     let secret = JWT_SECRET.get().unwrap();
     let decodeKey = &DecodingKey::from_secret(secret.as_bytes());
     let jwt = jsonwebtoken::decode(

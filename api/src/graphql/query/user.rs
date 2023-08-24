@@ -10,7 +10,8 @@ pub struct UserQuery;
 impl UserQuery {
     async fn get_profile(&self, ctx: &Context<'_>) -> Result<Option<user::Model>> {
         let db = DB.get().unwrap();
-        let data = User::find_by_id(ctx.data::<Uuid>()?.clone())
+        let user_id = ctx.data::<Uuid>().unwrap();
+        let data = User::find_by_id(user_id.to_owned())
             .one(db)
             .await?;
         Ok(data)

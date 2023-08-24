@@ -61,7 +61,7 @@ impl UserMutation {
     }
 
     async fn login_by_phone(&self, ctx: &Context<'_>, params: UserLoginPhone) -> Result<UserToken> {
-      let user_id = "123".to_string();
+      let user_id = "5a242296-74fb-41fe-b7aa-09580ea6429b".to_string();
         let (access_token, refresh_token, expires) =
                    encode(user_id).unwrap();
 

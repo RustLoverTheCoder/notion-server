@@ -14,6 +14,7 @@ use axum::{
     Router, Server,
 };
 use graphql::schema::{build_schema, AppSchema};
+use sea_orm::prelude::Uuid;
 
 use config::init;
 use jwt::decode;
@@ -34,14 +35,12 @@ async fn graphql_handler(
     if let Some(token) = get_token_from_headers(&headers) {
       let token_str = &token.0;
       let mut substring = String::new();
-
         for c in token_str.chars().skip(7) {
           substring.push(c);
         }
-        tracing::debug!("substring: {:?}", substring);
-        let claims = decode(&substring);
-        tracing::debug!("claims: {:?}", claims);
-        req = req.data(token);
+        let claims_res = decode(&substring).unwrap();
+        let user_id = Uuid::parse_str(claims_res.claims.sub.to_string().as_str()).unwrap();
+        req = req.data(user_id);
     }
     schema.execute(req).await.into()
 }
