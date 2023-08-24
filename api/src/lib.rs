@@ -1,7 +1,8 @@
-pub mod graphql;
-pub mod token;
 pub mod error;
-
+pub mod graphql;
+pub mod jwt;
+pub mod token;
+pub mod util;
 
 use async_graphql::http::{playground_source, GraphQLPlaygroundConfig};
 use async_graphql_axum::{GraphQLRequest, GraphQLResponse};
@@ -15,6 +16,8 @@ use axum::{
 use graphql::schema::{build_schema, AppSchema};
 
 use config::init;
+use jwt::Claims;
+use util::get_token_from_headers;
 
 async fn graphql_playground() -> impl IntoResponse {
     Html(playground_source(
@@ -28,9 +31,11 @@ async fn graphql_handler(
     req: GraphQLRequest,
 ) -> GraphQLResponse {
     let mut req = req.into_inner();
-    // if let Some(token) = get_token_from_headers(&headers) {
-    //     req = req.data(token);
-    // }
+    if let Some(token) = get_token_from_headers(&headers) {
+        let claims = Claims::decode(&token.0);
+        tracing::debug!("claims: {:?}", claims);
+        req = req.data(token);
+    }
     schema.execute(req).await.into()
 }
 

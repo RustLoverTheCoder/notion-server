@@ -8,6 +8,14 @@ pub struct UserQuery;
 
 #[Object]
 impl UserQuery {
+    async fn get_profile(&self, ctx: &Context<'_>) -> Result<Option<user::Model>> {
+        let db = DB.get().unwrap();
+        let data = User::find_by_id(ctx.data::<Uuid>()?.clone())
+            .one(db)
+            .await?;
+        Ok(data)
+    }
+
     async fn get_user_by_id(&self, ctx: &Context<'_>, id: Uuid) -> Result<Option<user::Model>> {
         let db = DB.get().unwrap();
         let data = User::find_by_id(id).one(db).await?;
