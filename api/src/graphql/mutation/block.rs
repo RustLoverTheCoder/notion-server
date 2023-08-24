@@ -68,7 +68,11 @@ impl BlockMutation {
     ) -> Result<block::Model> {
         let user_id = ctx.data::<Uuid>().unwrap();
         let db = DB.get().unwrap();
-        todo!()
+        let block_data = Block::find_by_id_and_author_id(id, user_id.to_owned())
+            .one(db)
+            .await?
+            .ok_or("Block not found")?;
+        Ok(block_data)
     }
 
     async fn delete_block_by_id(&self, ctx: &Context<'_>, id: Uuid) -> Result<bool> {

@@ -30,6 +30,12 @@ impl Entity {
         Self::find().filter(Column::Id.eq(id))
     }
 
+    pub fn find_by_id_and_author_id(id: Uuid, author_id: Uuid) -> Select<Entity> {
+        Self::find()
+            .filter(Column::Id.eq(id))
+            .filter(Column::AuthorId.eq(author_id))
+    }
+
     pub fn find_by_parent_id(parent_id: Uuid) -> Select<Entity> {
         Self::find().filter(Column::ParentId.eq(parent_id))
     }
