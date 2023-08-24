@@ -37,7 +37,7 @@ impl UserSettingMutation {
                                     setting_active.color_scheme = Set(color_scheme.to_owned());
                                 }
                                 if let Some(language) = new_user_setting.language {
-                                    setting_active.language = Set(language.to_owned());;
+                                    setting_active.language = Set(language.to_owned());
                                 }
                                 setting_active.update(db).await?;
                                 Ok(true)
