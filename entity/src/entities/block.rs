@@ -34,10 +34,11 @@ impl Entity {
         Self::find()
             .filter(Column::Id.eq(id))
             .filter(Column::AuthorId.eq(author_id))
+            .filter(Column::Disabled.eq(false))
     }
 
     pub fn find_by_parent_id(parent_id: Uuid) -> Select<Entity> {
-        Self::find().filter(Column::ParentId.eq(parent_id))
+        Self::find().filter(Column::ParentId.eq(parent_id)).filter(Column::Disabled.eq(false))
     }
 
     // 通过 author_id 和 parent_id 查找
@@ -45,5 +46,6 @@ impl Entity {
         Self::find()
             .filter(Column::AuthorId.eq(author_id))
             .filter(Column::ParentId.eq(parent_id))
+            .filter(Column::Disabled.eq(false))
     }
 }
