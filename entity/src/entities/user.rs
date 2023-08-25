@@ -33,14 +33,20 @@ impl ActiveModelBehavior for ActiveModel {}
 
 impl Entity {
     pub fn find_by_id(id: Uuid) -> Select<Entity> {
-        Self::find().filter(Column::Id.eq(id))
+        Self::find()
+            .filter(Column::Id.eq(id))
+            .filter(Column::Disabled.eq(false))
     }
 
     pub fn find_by_email(email: &str) -> Select<Entity> {
-        Self::find().filter(Column::Email.eq(email))
+        Self::find()
+            .filter(Column::Email.eq(email))
+            .filter(Column::Disabled.eq(false))
     }
 
     pub fn find_by_phone_number(phone_number: &str) -> Select<Entity> {
-        Self::find().filter(Column::PhoneNumber.eq(phone_number))
+        Self::find()
+            .filter(Column::PhoneNumber.eq(phone_number))
+            .filter(Column::Disabled.eq(false))
     }
 }

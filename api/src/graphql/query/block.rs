@@ -20,16 +20,20 @@ impl BlockQuery {
     async fn get_block_by_parent_id(
         &self,
         ctx: &Context<'_>,
-        parent_id: String,
+        parent_id: Uuid,
     ) -> Result<Vec<block::Model>> {
-        todo!()
+        let user_id = ctx.data::<Uuid>().unwrap();
+        let db = DB.get().unwrap();
+        let block_data = Block::find_by_author_id_and_parent_id(user_id.to_owned(), parent_id)
+            .all(db)
+            .await?;
+        Ok(block_data)
     }
 
-    async fn get_block_by_user_id(
-        &self,
-        ctx: &Context<'_>,
-        user_id: String,
-    ) -> Result<Vec<block::Model>> {
-        todo!()
+    async fn get_blocks(&self, ctx: &Context<'_>) -> Result<Vec<block::Model>> {
+        let user_id = ctx.data::<Uuid>().unwrap();
+        let db = DB.get().unwrap();
+        let block_data = Block::find_by_author_id(user_id.to_owned()).all(db).await?;
+        Ok(block_data)
     }
 }

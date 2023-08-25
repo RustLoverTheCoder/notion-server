@@ -48,4 +48,11 @@ impl Entity {
             .filter(Column::ParentId.eq(parent_id))
             .filter(Column::Disabled.eq(false))
     }
+
+    pub fn find_by_author_id(author_id: Uuid) -> Select<Entity> {
+        Self::find()
+            .filter(Column::AuthorId.eq(author_id))
+            .filter(Column::ParentId.is_null())
+            .filter(Column::Disabled.eq(false))
+    }
 }
