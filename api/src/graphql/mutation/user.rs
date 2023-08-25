@@ -50,25 +50,16 @@ impl UserMutation {
 
     async fn login_by_email(
         &self,
-        ctx: &Context<'_>,
+        _ctx: &Context<'_>,
         params: UserLoginEmail,
-    ) -> Result<Option<user::Model>, Error> {
+    ) -> Result<UserToken, Error> {
         tracing::debug!("sign_up_by_email: {:?}", params);
         let db = DB.get().unwrap();
         let data = User::find_by_email(&params.email.to_string())
             .one(db)
-            .await?;
-        Ok(data)
-    }
-
-    async fn login_by_phone(&self, ctx: &Context<'_>, params: UserLoginPhone) -> Result<UserToken> {
-        let db = DB.get().unwrap();
-        let user_id = ctx.data::<Uuid>().unwrap();
-        let data = User::find_by_id(user_id.to_owned())
-            .one(db)
             .await?
             .ok_or("user not found")?;
-        let (access_token, refresh_token, expires) = encode(user_id).unwrap();
+        let (access_token, refresh_token, expires) = encode(&data.id).unwrap();
 
         let users_token = UserToken {
             access_token,
@@ -78,7 +69,23 @@ impl UserMutation {
         Ok(users_token)
     }
 
-    async fn send_code_to_phone(&self, ctx: &Context<'_>, phone_number: String) -> Result<bool> {
+    async fn login_by_phone(&self, _ctx: &Context<'_>, params: UserLoginPhone) -> Result<UserToken> {
+        let db = DB.get().unwrap();
+        let data = User::find_by_phone_number(&params.phone_number.to_owned())
+            .one(db)
+            .await?
+            .ok_or("user not found")?;
+        let (access_token, refresh_token, expires) = encode(&data.id).unwrap();
+
+        let users_token = UserToken {
+            access_token,
+            refresh_token,
+            expires: expires.num_seconds(),
+        };
+        Ok(users_token)
+    }
+
+    async fn send_code_to_phone(&self, _ctx: &Context<'_>, phone_number: String) -> Result<bool> {
         let code = rand_code();
         tracing::debug!("send_code_to_phone: {:?}", code);
         Ok(true)
