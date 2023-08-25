@@ -1,3 +1,4 @@
+pub mod code;
 use hyper::HeaderMap;
 
 #[derive(Debug)]

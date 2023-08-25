@@ -1,7 +1,8 @@
+use crate::{jwt::encode, util::code::rand_code};
 use async_graphql::{Context, Error, InputObject, Object, Result, SimpleObject, ID};
 use config::contants::DB;
 use entity::{user, user::Entity as User};
-use crate::jwt::encode;
+use sea_orm::prelude::Uuid;
 
 #[derive(Default)]
 pub struct UserMutation;
@@ -61,19 +62,25 @@ impl UserMutation {
     }
 
     async fn login_by_phone(&self, ctx: &Context<'_>, params: UserLoginPhone) -> Result<UserToken> {
-      let user_id = "5a242296-74fb-41fe-b7aa-09580ea6429b".to_string();
-        let (access_token, refresh_token, expires) =
-                   encode(user_id).unwrap();
+        let db = DB.get().unwrap();
+        let user_id = ctx.data::<Uuid>().unwrap();
+        let data = User::find_by_id(user_id.to_owned())
+            .one(db)
+            .await?
+            .ok_or("user not found")?;
+        let (access_token, refresh_token, expires) = encode(user_id).unwrap();
 
-               let users_token = UserToken {
-                   access_token,
-                   refresh_token,
-                   expires: expires.num_seconds(),
-               };
-               Ok(users_token)
+        let users_token = UserToken {
+            access_token,
+            refresh_token,
+            expires: expires.num_seconds(),
+        };
+        Ok(users_token)
     }
 
     async fn send_code_to_phone(&self, ctx: &Context<'_>, phone_number: String) -> Result<bool> {
-        todo!()
+        let code = rand_code();
+        tracing::debug!("send_code_to_phone: {:?}", code);
+        Ok(true)
     }
 }

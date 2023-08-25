@@ -1,6 +1,7 @@
 use chrono::{Duration, Utc};
 use config::contants::JWT_SECRET;
 use jsonwebtoken::{DecodingKey, EncodingKey, Header, TokenData, Validation};
+use sea_orm::prelude::Uuid;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -19,16 +20,12 @@ pub struct Claims {
 pub fn decode(token: &str) -> anyhow::Result<TokenData<Claims>> {
     let secret = JWT_SECRET.get().unwrap();
     let decodeKey = &DecodingKey::from_secret(secret.as_bytes());
-    let jwt = jsonwebtoken::decode(
-        token,
-        decodeKey,
-        &Validation::default(),
-    )?;
+    let jwt = jsonwebtoken::decode(token, decodeKey, &Validation::default())?;
 
     Ok(jwt)
 }
 
-pub fn encode(user_id: String) -> anyhow::Result<(String, String, Duration)> {
+pub fn encode(user_id: &Uuid) -> anyhow::Result<(String, String, Duration)> {
     let secret = JWT_SECRET.get().unwrap();
     let secret = &EncodingKey::from_secret(secret.as_bytes());
     let iss = "server".to_string();
