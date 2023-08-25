@@ -33,10 +33,11 @@ async fn graphql_handler(
 ) -> GraphQLResponse {
     let mut req = req.into_inner();
     if let Some(token) = get_token_from_headers(&headers) {
-      let token_str = &token.0;
-      let mut substring = String::new();
+        tracing::info!("token: {:?}", token);
+        let token_str = &token.0;
+        let mut substring = String::new();
         for c in token_str.chars().skip(7) {
-          substring.push(c);
+            substring.push(c);
         }
         let claims_res = decode(&substring).unwrap();
         let user_id = Uuid::parse_str(claims_res.claims.sub.to_string().as_str()).unwrap();

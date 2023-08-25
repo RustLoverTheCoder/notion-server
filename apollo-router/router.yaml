@@ -12,10 +12,18 @@ server:
   landing_page: true
   cors:
     allow_any_origin: true
-    origins: []
-    methods: [POST, OPTIONS, GET]
+    methods: 
+      - GET
+      - POST
+      - OPTIONS
+    allow_credentials: true
     allow_headers: [ Content-Type, Authorization, x-my-custom-required-header, x-and-an-other-required-header ]
     expose_headers: []
+    headers:
+      all:
+        request:
+          - propagate:
+              named: Authorization
 telemetry:
   tracing:
     trace_config:
